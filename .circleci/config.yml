@@ -7,14 +7,6 @@ defaults: &defaults
     - image: cimg/python:3.10
   working_directory: ~/project
 
-prepare_venv: &prepare_venv
-  run:
-    name: Create venv
-    command: |
-      python -m venv venv
-      source venv/bin/activate
-      pip install --upgrade pip
-
 jobs:
   deploy_app_to_railway:
     <<: *defaults
@@ -23,22 +15,13 @@ jobs:
           path: ~/project/
       - node/install:
           node-version: '20.9'
-      - run: node --version 
+      - run: node --version
       - run: npm i -g @railway/cli
       - run:
           name: Deploy to Railway App
           command: |
             cd bankchurn-api
-            railway up --service=hearty-recreation
-            railway up --detach
-
-
-tags_only: &tags_only
-  filters:
-    branches:
-      ignore: /.*/
-    tags:
-      only: /^.*/
+            railway up --service hearty-recreation --detach
 
 workflows:
   version: 1
@@ -47,5 +30,5 @@ workflows:
       - deploy_app_to_railway:
           filters:
             branches:
-              only:
-                - main
+              only: main
+
